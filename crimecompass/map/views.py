@@ -63,14 +63,11 @@ def map(request):
     }
     return render(request, 'map.html', context)
 
+
 def home(request):
-    if request.method == 'POST':
-        form = RouteForm(request.POST)
-        if form.is_valid():
-            return redirect('home')
-    else:
-        form = RouteForm()
+    form = RouteForm()
     return render(request, 'home.html', {'form': form})
+
 
 
 def submit_route(request):

@@ -1,6 +1,81 @@
-<!-- home.html -->
-<form action="{% url 'submit_route' %}" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
-</form>
+{% load static %} <!-- Load the static files tag if you need to include static files -->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Your existing style definitions -->
+        <style>
+            body, h1 {
+                margin: 0;
+            }
+    
+            .title {
+                background-color: #00A8E8;
+                text-align: center;
+                padding: 20px 0;
+                width: 100%;
+                color: white;
+            }
+    
+            .form-container {
+                display: flex;
+                justify-content: center;
+                align-items: center; 
+                height: calc(60vh); 
+                width: 100%;
+            }
+    
+            .input {
+                background-color: rgb(217, 206, 206);
+                border-radius: 15px;
+                padding: 20px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                width: 50%;
+                max-width: 600px; /* Adjust the max-width as necessary */
+                margin: auto; /* Centers the form in the container */
+            }
+    
+            .input form {
+                width: 100%; /* Ensure the form fills its container */
+            }
+    
+            .input p {
+                margin-bottom: 10px; /* Spacing between form fields */
+            }
+    
+            .input input[type="text"], .input button {
+                width: calc(100% - 40px); /* Adjust width considering padding */
+                box-sizing: border-box;
+                border-radius: 5px;
+                border: none;
+                padding: 10px;
+                margin-bottom: 10px; 
+            }
+    
+            .input button {
+                cursor: pointer;
+            }
+    
+            .input label {
+                display: block;
+                text-align: left; 
+                margin-bottom: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="title">
+            <h1>CrimeCompass</h1>
+        </div>
+        <div class="form-container">
+            <!-- Start of form -->
+            <div class="input">
+                <form action="{% url 'submit_route' %}" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Make Route</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
