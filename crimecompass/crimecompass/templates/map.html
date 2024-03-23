@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Map Directions and Address Autofill</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+</head>
+<body>
+
+    <p>Starting Location: <span id="starting_location">[Starting Location]</span></p>
+    <p>Destination: <span id="destination">[Destination]</span></p>
+    <div id="map" style="width: 100%; height: 400px;"></div>
+
+    <script>
+    var map = L.map('map').setView([38.0336, -78.5080], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Replace the following coordinates with your actual starting location and destination
+    var startingLocation = ; // Example coordinates
+    var destination = [38.0293, -78.4767]; // Example coordinates
+
+    // Set the innerHTML of the p tags to your starting location and destination for display purposes
+    document.getElementById('starting_location').innerHTML = startingLocation.join(', ');
+    document.getElementById('destination').innerHTML = destination.join(', ');
+
+    // Using Leaflet Routing Machine to display the route
+    L.Routing.control({
+        waypoints: [
+            L.latLng(startingLocation),
+            L.latLng(destination)
+        ],
+        routeWhileDragging: true,
+        geocoder: L.Control.Geocoder.nominatim(),
+        router: L.Routing.openrouteservice('5b3ce3597851110001cf624847bbb5db0d234327a7a7a31de91d3134', {
+            serviceUrl: 'https://api.openrouteservice.org/v2/directions/driving-car/geojson'
+        }),
+    }).addTo(map);
+    </script>
+</body>
+</html>
