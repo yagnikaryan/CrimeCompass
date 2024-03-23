@@ -45,3 +45,10 @@ def map_and_directions(request):
         context = {'error': 'Could not fetch directions.'}
 
     return render(request, 'your_template.html', context)
+def map(request):
+    template = loader.get_template('map.html')
+    return HttpResponse(template.render())
+
+def home(request):
+    template = loader.get_template('home.html')
+    return HttpResponse(template.render())
