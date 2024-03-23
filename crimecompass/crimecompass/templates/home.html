@@ -1,26 +1,6 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>CrimeCompass - Input Directions</title>
-    </head>
-    <body>
-        <div class="title">
-            <h1>CrimeCompass</h1>
-        </div>
-        <div class="input">
-            <form action="/map/" method="get">
-                <div>
-                    <label for="startAddress">Starting Location</label>
-                    <input type="text" id="startAddress" name="startAddress" required>
-                </div>
-                <div>
-                    <label for="endAddress">Destination</label>
-                    <input type="text" id="endAddress" name="endAddress" required>
-                </div>
-                <div>
-                    <button type="submit">Make Route</button>
-                </div>
-            </form>
-        </div>
-    </body>
-</html>
+<!-- home.html -->
+<form action="{% url 'submit_route' %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+</form>
