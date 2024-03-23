@@ -80,6 +80,19 @@
                 margin-bottom: 0; /* No extra space at the bottom */
             }
         </style>
+
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvvPh3svO6R-gM3GOblmmZXrKc56YoNnw&libraries=places&callback=initAutocomplete" async defer></script>
+                
+        <script>
+            function initAutocomplete(){
+                var startingInput = document.getElementById('id_starting_location');
+                var autocompleteStart = new google.maps.places.Autocomplete(startingInput);
+
+                var destinationInput = document.getElementById('id_destination');
+                var autocompleteDest = new google.maps.places.Autocomplete(destinationInput);
+            }
+        </script>
+
     </head>
     <body>
         <div class="title">
