@@ -6,40 +6,47 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 </head>
 <body>
 
-    <p>Starting Location: <span id="starting_location">[Starting Location]</span></p>
-    <p>Destination: <span id="destination">[Destination]</span></p>
+    <p>Starting Location: {{starting_location}}</p>
+    <p>Destination: {{destination}}</p>
+    <p>Starting Location Coordinates: {{starting_location_coords}}</p>
+    <p>Destination Coordinates: {{destination_coords}}</p>
     <div id="map" style="width: 100%; height: 400px;"></div>
 
     <script>
+
     var map = L.map('map').setView([38.0336, -78.5080], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Replace the following coordinates with your actual starting location and destination
-    var startingLocation = ; // Example coordinates
-    var destination = [38.0293, -78.4767]; // Example coordinates
+    function addRouteToMap(routeFeatures){
+        L.geoJSON(routeFeatures, {
+            style: function(feature){
+                return {color: "#ff7800", weight: 5};
+            },
+            onEachFeature: function(feature, layer){
+                if (feature.properties && feature.properties.summary){
+                    layer.bindPopup('Distance: ${feature.properties.summary.distances} meters');
+                }
+            }
+        }).addTo(map);
+    }
 
-    // Set the innerHTML of the p tags to your starting location and destination for display purposes
-    document.getElementById('starting_location').innerHTML = startingLocation.join(', ');
-    document.getElementById('destination').innerHTML = destination.join(', ');
+    const apiKey = '5b3ce3597851110001cf624847bbb5db0d234327a7a7a31de91d3134'
+    const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${startingLocation[1]},${startingLocation[0]}&end=${destination[1]},${destination[0]}`;
 
-    // Using Leaflet Routing Machine to display the route
-    L.Routing.control({
-        waypoints: [
-            L.latLng(startingLocation),
-            L.latLng(destination)
-        ],
-        routeWhileDragging: true,
-        geocoder: L.Control.Geocoder.nominatim(),
-        router: L.Routing.openrouteservice('5b3ce3597851110001cf624847bbb5db0d234327a7a7a31de91d3134', {
-            serviceUrl: 'https://api.openrouteservice.org/v2/directions/driving-car/geojson'
-        }),
-    }).addTo(map);
+    fetch(url)
+        .then(response=>response.json())
+        .then(data=>{
+            addRouteToMap(data.features);
+        })
+        .catch(error=>console.error('Error getting data:', error));
+
     </script>
 </body>
 </html>
