@@ -93,7 +93,8 @@
             <div class="input">
                 <form action="{% url 'submit_route' %}" method="post">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    {{ form.starting_location }}
+                    {{ form.destination }}
                     <button type="submit">Make Route</button>
                 </form>
             </div>
