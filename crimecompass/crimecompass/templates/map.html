@@ -7,13 +7,17 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <input type="text" id="startAddress" placeholder="Start Address" />
-    <input type="text" id="endAddress" placeholder="Destination Address" />
+    <input type="text" id="startAddress" placeholder="Start Address" value="{{ start_address }}" />
+    <input type="text" id="endAddress" placeholder="Destination Address" value="{{ end_address }}" />
     <button id="enterButton">Enter</button>
     <div id="map" style="width: 100%; height: 400px;"></div>
 
     <script>
-        // JavaScript code will go here
+    var map = L.map('map').setView([49.419, 8.686], 13); // Example coordinates and zoom level
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
     </script>
 </body>
 </html>
