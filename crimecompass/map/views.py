@@ -6,21 +6,17 @@ from .forms import RouteForm
 import requests
 
 
-
-# Create your views here.
-
 def index(request):
     template = loader.get_template('map.html')
     return HttpResponse(template.render())
 
 
 def map_and_directions(request):
-    # Your OpenRouteService API Key
+
     api_key = '5b3ce3597851110001cf624847bbb5db0d234327a7a7a31de91d3134'
 
-    # Coordinates (longitude, latitude) for the start and end points
-    start_coord = (8.681495, 49.41461)  # Example coordinates
-    end_coord = (8.687872, 49.420318)  # Example coordinates
+    start_coord = (8.681495, 49.41461)
+    end_coord = (8.687872, 49.420318)
     # start_coord = request.session.get('start_coord')
     # end_coord = request.session.get('end_coord')
 
@@ -37,14 +33,10 @@ def map_and_directions(request):
         'end': f'{end_coord[0]},{end_coord[1]}'
     }
 
-    # Make the API request
     response = requests.get(url, headers=headers, params=params)
 
-    # Check if the request was successful
     if response.status_code == 200:
-        # Extract the geometry (route) from the response
         route = response.json()['features'][0]['geometry']
-        # Pass the route to the template
         context = {'route': route}
     else:
         context = {'error': 'Could not fetch directions.'}
@@ -77,7 +69,7 @@ def map(request):
 def home(request):
     form = RouteForm()
     return render(request, 'home.html', {'form': form})
- # Make sure you have this library
+
 
 from urllib.parse import quote
 import requests
@@ -92,7 +84,7 @@ def submit_route(request):
             encoded_destination = quote(destination)
             
             geocode_url = "https://maps.googleapis.com/maps/api/geocode/json"
-            api_key = "AIzaSyBvvPh3svO6R-gM3GOblmmZXrKc56YoNnw" 
+            api_key = ""
 
             start_response = requests.get(f"{geocode_url}?address={encoded_starting_location}&key={api_key}")
             start_data = start_response.json()

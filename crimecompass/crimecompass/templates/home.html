@@ -171,28 +171,28 @@
                 .walking-figures {
                     position: fixed;
                     bottom: -15px;
-                    left: 0%; /* Start from the left */
-                    animation: slideRight 20s linear infinite; /* Adjust the duration as needed */
-                    box-shadow: 0 0 15px #007BFF; /* Adjust color and size as needed */
-                    filter: drop-shadow(0 0 15px #007BFF); /* Adjust color and size as needed */
+                    left: 0%;
+                    animation: slideRight 20s linear infinite;
+                    box-shadow: 0 0 15px #007BFF;
+                    filter: drop-shadow(0 0 15px #007BFF);
                 }
 
                 .walking-figure {
-                    display: none; /* Start with all figures not displayed */
-                    width: 150px; /* Adjust as needed */
-                    height: auto; /* Maintain aspect ratio */
+                    display: none;
+                    width: 150px;
+                    height: auto;
                     position: absolute;
                 }
 
                 @keyframes slideRight {
-                    from { left: -150px; } /* Start slightly off-screen to the left */
-                    to { left: 100%; } /* Move to the right, across the entire screen width */
+                    from { left: -150px; }
+                    to { left: 100%; }
                 }
 
                 .text-bubble {
                     position: absolute;
-                    bottom: 200px; /* Adjust based on figure size to avoid overlap */
-                    left: 120px; /* Move it to the right of the figure */
+                    bottom: 200px;
+                    left: 120px;
                     width: 130px;
                     padding: 10px;
                     background-color: white;
@@ -200,8 +200,8 @@
                     border-radius: 10px;
                     z-index: 1000;
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    opacity: 0; /* Initially invisible */
-                    visibility: hidden; /* Initially not visible */
+                    opacity: 0;
+                    visibility: hidden;
                 }
 
                 @keyframes bubblePop {
@@ -212,11 +212,11 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                let currentIndex = 0; // Start with the first image
-                const figures = document.querySelectorAll('.walking-figure'); // Get all figures
-                const totalFigures = figures.length; // Total number of figures
-                const animationSpeed = 150; // Change figure every 500 milliseconds
-                const textBubble = document.querySelector('.text-bubble'); // Get the text bubble
+                let currentIndex = 0;
+                const figures = document.querySelectorAll('.walking-figure');
+                const totalFigures = figures.length;
+                const animationSpeed = 150;
+                const textBubble = document.querySelector('.text-bubble');
                 textBubble.style.animation = 'bubblePop 4s infinite linear';
 
                 // Function to update figure visibility and show the text bubble periodically
@@ -224,10 +224,10 @@
                     figures.forEach((fig, index) => {
                         fig.style.display = index === currentIndex ? 'block' : 'none';
                     });
-                    currentIndex = (currentIndex + 1) % totalFigures; // Move to the next figure, loop back at the end
+                    currentIndex = (currentIndex + 1) % totalFigures;
                 }
 
-                // Start the animation
+
                 setInterval(updateFigures, animationSpeed);
             });
 
