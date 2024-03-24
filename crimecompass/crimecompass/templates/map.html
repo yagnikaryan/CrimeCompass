@@ -14,39 +14,125 @@
     <p>Destination: {{destination}}</p>
     <p>Starting Location Coordinates: {{starting_location_coords}}</p>
     <p>Destination Coordinates: {{destination_coords}}</p>
+
     <div id="map" style="width: 100%; height: 400px;"></div>
 
     <script>
-
-    var map = L.map('map').setView([38.0336, -78.5080], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    function addRouteToMap(routeFeatures){
-        L.geoJSON(routeFeatures, {
-            style: function(feature){
-                return {color: "#ff7800", weight: 5};
-            },
-            onEachFeature: function(feature, layer){
-                if (feature.properties && feature.properties.summary){
-                    layer.bindPopup('Distance: ${feature.properties.summary.distances} meters');
-                }
-            }
-        }).addTo(map);
-    }
-
-    const apiKey = '5b3ce3597851110001cf624847bbb5db0d234327a7a7a31de91d3134'
-    const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${startingLocation[1]},${startingLocation[0]}&end=${destination[1]},${destination[0]}`;
-
-    fetch(url)
-        .then(response=>response.json())
-        .then(data=>{
-            addRouteToMap(data.features);
-        })
-        .catch(error=>console.error('Error getting data:', error));
+        var startLat = '{{ start_lat|safe }}';
+        var startLng = '{{ start_lng|safe }}';
+        var destLat = '{{ dest_lat|safe }}';
+        var destLng = '{{ dest_lng|safe }}';
 
     </script>
+
+        <script>
+        var map = L.map('map').setView([38.0293, -78.4767], 13);
+
+        const avoidCoordsArray = [[38.053803, -78.496967], [38.053487, -78.497815], [38.024321, -78.473995], [38.032978, -78.49248], [38.023252, -78.474203], [38.033812, -78.49565], [38.025241, -78.502957], [38.936337, -77.046912], [38.028946, -78.490195], [38.027583, -78.490406], [38.029064, -78.492966], [38.029324, -78.496354], [38.026586, -78.490381], [38.033711, -78.492954], [38.025592, -78.476019], [38.02982, -78.496465], [38.024395, -78.47646], [38.053442, -78.494333], [38.019755, -78.508844], [38.035604, -78.496811], [38.052713, -78.498627], [38.053874, -78.495456], [38.051866, -78.499841], [38.054236, -78.496077], [38.024489, -78.474104], [38.024525, -78.474405], [38.053188, -78.497225], [38.020339, -78.506946], [38.02341, -78.503508], [38.025354, -78.472911], [38.02533, -78.480559], [38.019573, -78.505721], [38.027368, -78.487606], [38.030356, -78.497453], [38.023621, -78.478126], [38.030292, -78.498988], [38.020507, -78.505782], [38.025127, -78.474867], [38.031759, -78.492853], [38.026714, -78.499446], [38.023198, -78.476868], [38.031314, -78.490992], [38.053753, -78.473416], [38.032125, -78.49546], [38.026066, -78.473723], [38.02663, -78.48724], [38.042588, -78.468733], [38.029962, -78.498255], [38.039593, -78.466961], [38.053081, -78.4999]];
+
+        function createAvoidPolygons(coordsArray) {
+            const buffer = 0.0005; // Buffer distance
+            return coordsArray.map(coords => [
+                [coords[0] - buffer, coords[1] - buffer],
+                [coords[0] + buffer, coords[1] - buffer],
+                [coords[0] + buffer, coords[1] + buffer],
+                [coords[0] - buffer, coords[1] + buffer],
+                [coords[0] - buffer, coords[1] - buffer]
+            ]);
+        }
+
+        function decodePolyline(encoded) {
+            var points = [];
+            var index = 0, len = encoded.length;
+            var lat = 0, lng = 0;
+            while (index < len) {
+                var b, shift = 0, result = 0;
+                do {
+                    b = encoded.charAt(index++).charCodeAt(0) - 63; // finds ascii value and subtracts 63
+                    result |= (b & 0x1f) << shift;
+                    shift += 5;
+                } while (b >= 0x20);
+
+                var dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
+                lat += dlat;
+                shift = 0;
+                result = 0;
+                do {
+                    b = encoded.charAt(index++).charCodeAt(0) - 63;
+                    result |= (b & 0x1f) << shift;
+                    shift += 5;
+                } while (b >= 0x20);
+                var dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
+                lng += dlng;
+
+                points.push([lat / 1E5, lng / 1E5]);
+            }
+            return points;
+        }
+
+        var avoidAreas = createAvoidPolygons(avoidCoordsArray);
+
+        avoidAreas.forEach(area => {
+            L.polygon(area, {color: 'red', weight: 3}).addTo(map);
+        });
+
+        const avoidPolygonsForRouting = avoidAreas.map(area => area.map(coord => [coord[1], coord[0]]));
+
+        const options = {
+            avoid_polygons: {
+                type: "MultiPolygon",
+                coordinates: [avoidPolygonsForRouting]
+            }
+        };
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Function to add route to map
+        function addRouteToMap(routeFeatures) {
+            L.geoJSON(routeFeatures, {
+                style: function (feature) {
+                    return { color: "#ff7800", weight: 5 };
+                }
+            }).addTo(map);
+        }
+
+        // Assuming startLng, startLat, destLng, destLat are defined elsewhere in your code
+        const body = JSON.stringify({
+            "coordinates": [[startLng, startLat], [destLng, destLat]],
+            "options": options
+        });
+
+        console.log(body)
+
+        fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
+                'Content-Type': 'application/json',
+                'Authorization': '5b3ce3597851110001cf624847bbb5db0d234327a7a7a31de91d3134'
+            },
+            body: body
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.routes || data.routes.length === 0) {
+                console.error('No routes found or an error occurred.', data);
+                return; // Exit the function or handle this case as needed.
+            }
+            const encodedPolyline = data.routes[0].geometry;
+            const decodedPath = decodePolyline(encodedPolyline);
+            L.polyline(decodedPath, {
+                color: 'blue',
+                weight: 4,
+                opacity: 0.7
+            }).addTo(map);
+            map.fitBounds(L.polyline(decodedPath).getBounds());
+        })
+        .catch(error => console.error('Error:', error));
+    </script>
+
+
 </body>
 </html>
