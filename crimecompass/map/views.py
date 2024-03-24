@@ -106,7 +106,7 @@ def submit_route(request):
                 request.session['destination'] = destination
                 request.session['starting_location_coords'] = start_coords
                 request.session['destination_coords'] = dest_coords
-
+            request.session.save()
             # Redirect to the map view
             return redirect('map')
     else:
